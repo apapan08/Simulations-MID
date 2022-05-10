@@ -2,16 +2,15 @@
 
 # 1. Function to estimate changepoints from triplets matrix
 
-EstimateTriplets <- function(X,A,threshold){
+EstimateTripletsLinear <- function(X,A,threshold){
   ChagePointsPerRow <- foreach(row = 1:nrow(A),.combine='c')%do%
     {
       triplet = A[row,]
-    
-      CusumValue = IDetect:::cusum_one(X,s = triplet[1],e = triplet[3],b = triplet[2])
+      
+      CusumValue = IDetect:::linear_contr_one(X,s = triplet[1],e = triplet[3],b = triplet[2])
       return(CusumValue)
     }
-  #for linear check mad(diff(diff(X)))/sqrt(6)
-  sigmaestimated = mad(diff(X))/sqrt(2)
+  sigmaestimated = mad(diff(diff(X)))/sqrt(6)
   thresholdnew = threshold * sigmaestimated
   VectorPositionChangePoints <- which(ChagePointsPerRow>thresholdnew)
   FoundChangePoints <- A[VectorPositionChangePoints,2]
@@ -19,9 +18,11 @@ EstimateTriplets <- function(X,A,threshold){
   
 }
 
-EstimatedSparsity <- function(X){
+
+EstimatedSparsityLinear <- function(X){
   LengthTimeserie <- nrow(X)
-  EstimatedChangepoints <- additive_thr_Linf(X)
+  TempThreshold <- linf_dimension[dimension == ncol(X),threshold]
+  EstimatedChangepoints <- additive_thr_Linf_trend(X,thr_const = TempThreshold)
   if (length(EstimatedChangepoints)==0){
     ComponentsWithChp <- 0
   }else{
@@ -33,14 +34,13 @@ EstimatedSparsity <- function(X){
     threshold = 1.1*sqrt(2*log(LengthTimeserie)) # 1.1 is the default value for IDetect
     ChangepointComponents = apply(
       X, MARGIN = 2,
-      FUN = EstimateTriplets,A = triplets,
+      FUN = EstimateTripletsLinear,A = triplets,
       threshold = threshold )
     ComponentsWithChp = max(table(unlist(ChangepointComponents)))
   }
   sparsity <- ComponentsWithChp/ncol(X)
   return(sparsity)
 }
-
 
 
 
