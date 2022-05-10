@@ -15,21 +15,18 @@ library(InspectChangepoint)#for inspect
 
 
 
-#best thresholds (Find through simulation)
+#best thresholds (Find through best_thresholds.R)
 l2_dimension<-fread("Thresholds/constant/l2_best.csv")
 linf_dimension<-fread("Thresholds/constant/linf_best.csv")
 
 #Import Signals 
-# signals created through CreateSignals.R
-all_signal <- readRDS(choose.files())
+# signals created through Create_signals.R
+all_signal <- readRDS("Signals/signal.rds")
 
 # Import Evaluation Metric functions
 source("HelpFunctions/Evaluations.R")
-# Import functions for estimating sparsity 
-
-
-
-#import methods 
+ 
+#import methods + estimated sparsity functions
 source("algorithms/additive_thr_Linf.R")
 source("algorithms/additive_thr_L2.R")
 source("HelpFunctions/EstimateSparsity.R")
@@ -62,7 +59,7 @@ Execution_Table <- data.table(
 Execution_Table <- Execution_Table[methods %in% parameters$algorithms_to_run]
 
 
-#import all scenarios (exported from CreateSignals.R)
+#import all scenarios (exported from Create_signals.R)
 all_combos <- fread("Signals/all_combos.csv")
 
 Allresults<-foreach(i=1:nrow(all_combos))%do%
