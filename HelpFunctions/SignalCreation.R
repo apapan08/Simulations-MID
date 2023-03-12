@@ -137,7 +137,7 @@ change_sign<-function(x){
 # 'random_matrix' creates a matrix of dimension 'd' and Length 'T'
 # other parameters : number of changepoints , minimum distance between changepoints
 # parameters of the uniform distribution that will be used for the random jump
-random_matrix= function(d,n,number_of_changepoints,sparsity,distance,a_uniform=1,b_uniform=4){
+random_matrix <- function(d,n,number_of_changepoints,sparsity,a_uniform=1,b_uniform=2, noise_distr = "Gaussian"){
   #sparsity(in how many columns there will it be at least one changepoint)
   ks=round(sparsity*d)
   components_for_changepoints<-matrix(NA,nrow = number_of_changepoints,ncol = d)
@@ -147,33 +147,62 @@ random_matrix= function(d,n,number_of_changepoints,sparsity,distance,a_uniform=1
   max_chps=sample(c(1:number_of_changepoints),1)
   components_for_changepoints[max_chps,sparsity_max]=1
   for (i in c(1:number_of_changepoints)[-max_chps]){
-    x=rdu(sample(c(1:ks),1),d)
+    x=rdu(sample(c(1:ceiling(ks/16)),1),d)
     components_for_changepoints[i,x]=1
   }
   components_for_changepoints[is.na(components_for_changepoints)]<-0
-  
   timeserie=list()
   #find the positions of the changepoints
-  changepoints_positions = place_chps(n,number_of_changepoints,distance)
+  changepoints_positions <- seq(floor(n/(number_of_changepoints+1)), n - floor(n/(number_of_changepoints+1)), floor(n/(number_of_changepoints+1)))
+  ind <- rowSums(components_for_changepoints)
   for (i in 1:d){
     x=which(components_for_changepoints[,i]==1)
     if (length(x)==0){
       timeserie=list.append(timeserie,rep(0,n))
     }else{
       changepoints<-changepoints_positions[x]
-      jumps=change_sign(runif(length(changepoints),a_uniform,b_uniform))
+      jumps=change_sign(runif(length(changepoints),a_uniform,b_uniform))/sqrt(ind[x])
       timeserie=list.append(timeserie,create_signal(n,changepoints,jumps))
     }
     
     
   }
+  noiseless_signal <- timeserie
   #adds noise to each one of the components
-  timeserie=t(do.call(rbind,timeserie))+matrix(rnorm(d*n),nrow = n)
-  
-  
-  return(list("ts"=timeserie,"chps"=changepoints_positions,"comp"=components_for_changepoints))
+  if (noise_distr == "Gaussian"){
+    timeserie = t(do.call(rbind,timeserie))+ matrix(rnorm(d*n),nrow = n)
+  } 
+  if (noise_distr == "Unif"){
+    timeserie = t(do.call(rbind,timeserie))+ matrix(runif(d*n,min=-sqrt(3),max = sqrt(3)),nrow = n)
+  } 
+  if (noise_distr == "Student"){
+    d.f <- 8
+    timeserie = t(do.call(rbind,timeserie))+ sqrt((d.f-2)/d.f) * matrix(rt(d*n,df = d.f),nrow = n)
+  }
+  if (noise_distr == "Exponential"){
+    timeserie = t(do.call(rbind,timeserie))+ matrix(rexp(d*n,rate = 1),nrow = n)
+  }
+  if (noise_distr == "Cauchy"){
+    timeserie = t(do.call(rbind,timeserie))+ matrix(rcauchy(d*n),nrow = n)
+  }
+  if (noise_distr == "Temporal"){
+    TempMatrix <- matrix(NA,nrow = n,ncol = d)
+    TempMatrix <- apply(TempMatrix, MARGIN =  2,FUN =  function(x) arima.sim(n = n, list(ar = 0.3)))
+    timeserie = t(do.call(rbind,timeserie)) + TempMatrix
+  } 
+  if (noise_distr == "Spatial"){
+    #SigmaMatrix <- matrix(NA, d,d)
+    #for (i in 1: d){
+    #  for (j in 1:d){
+    #    SigmaMatrix[i,j] = 2^{-abs(i-j)}
+    #  }
+    #}
+    SigmaMatrix <- matrix(1, d,d)
+    TempMatrix <- rmvnorm(n=n, mean = rep(0,d), sigma= SigmaMatrix)
+    timeserie = t(do.call(rbind,timeserie)) + TempMatrix
+  }
+  return(list("ts"=timeserie,"chps"=changepoints_positions,"comp"=components_for_changepoints, "signal" = noiseless_signal))
 }
-
 
 # EXAMPLE
 # set.seed(16)

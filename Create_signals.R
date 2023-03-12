@@ -41,8 +41,8 @@ for (i in 1:nrow(simulation_setup)){
   )]]=list()
   
   for (j in 1:m){
-    matrix_temp=random_matrix(d=dime,n=length_of_timeserie,number_of_changepoints = n_changepoints,
-                              sparsity = sparsity,distance = distance)
+    matrix_temp = random_matrix(d=dime,n=length_of_timeserie,number_of_changepoints = n_changepoints,
+                                    sparsity = sparsity,a_uniform = 2, b_uniform = 2, noise_distr = "Gaussian")
     timeserie_list[[paste0(
       as.character(dime),"_",as.character(n_changepoints),"_",as.character(sparsity)
     )]][[as.character(j)]][["signal"]]=matrix_temp$ts
