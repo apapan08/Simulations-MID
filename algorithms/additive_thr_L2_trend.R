@@ -19,6 +19,12 @@ additive_thr_L2_trend <- function(X, thr_const = 1.4,
         If it is a positive real number then the integer part of the
         given number is used as the value of `points'.")
   }
+  if (ncol(X)>50){
+    thr_const <- l2_dimension_lin[dimension == 50,threshold]
+    thr_fin = thr_const * sqrt(2*log(nrow(X)))
+  }else{
+    thr_const=l2_dimension_lin[dimension == ncol(X),threshold]
+    thr_fin = thr_const * sqrt(2*log(nrow(X)))}
   points <- as.integer(points)
   l <- length(X[, 1])
   r_e_points <- seq(points, l, points)
