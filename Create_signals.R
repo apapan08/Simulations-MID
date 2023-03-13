@@ -23,8 +23,7 @@ distance <- 20
 simulation_setup <- as.data.table(tidyr::crossing(dimension,number_of_changepoints,sparsity))
 
 #Depending on the number of changepoints we fix the length of the timeserie
-simulation_setup[,LengthTimeserie := ifelse(number_of_changepoints == 3,700,
-                                            ifelse(number_of_changepoints==20,1000,1500))]
+simulation_setup[,LengthTimeserie := 1500]
 
 fwrite(simulation_setup,"Signals/all_combos.csv")
 
@@ -41,8 +40,19 @@ for (i in 1:nrow(simulation_setup)){
   )]]=list()
   set.seed(27)
   for (j in 1:m){
-    matrix_temp = random_matrix(d=dime,n=length_of_timeserie,number_of_changepoints = n_changepoints,
-                                    sparsity = sparsity,a_uniform = 2, b_uniform = 2, noise_distr = "Gaussian")
+    matrix_temp = random_matrix(
+      d = dime,
+      n = length_of_timeserie,
+      number_of_changepoints = n_changepoints,
+      sparsity = sparsity,
+      a_uniform = 2,
+      b_uniform = 2,
+      noise_distr = "Gaussian",
+      DoF = 8,
+      uniform_lower = -sqrt(3),
+      uniform_upper = sqrt(3),
+      SettingSpatial = "setting2"
+    )
     timeserie_list[[paste0(
       as.character(dime),"_",as.character(n_changepoints),"_",as.character(sparsity)
     )]][[as.character(j)]][["signal"]]=matrix_temp$ts
