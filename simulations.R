@@ -12,6 +12,7 @@ library(foreach)
 library(MixGHD)#for ARI
 library(hdbinseg)#for dcbs.alg
 library(InspectChangepoint)#for inspect
+library(kcpRS) # For KCP methods
 
 
 
@@ -27,31 +28,52 @@ all_signal <- readRDS("Signals/signal.rds")
 source("HelpFunctions/Evaluations.R")
  
 #import methods + estimated sparsity functions
-source("algorithms/additive_thr_Linf.R")
-source("algorithms/additive_thr_L2.R")
 source("HelpFunctions/EstimateSparsity.R")
-source("algorithms/MIDopt.R")
-source("algorithms/additive_permutations.R")
 
+# List all the R scripts in the folder
+r_files <- list.files(path = "algorithms",pattern = "*.R")
+
+# Loop through the list of files and source each R script
+for (file in r_files) {
+  source(paste0("algorithms/",file))
+}
 
 parameters <-  list(
-  iterations=100,#same as the number of signals generated for each simulation setup
-  algorithms_to_run = c("MIDopt","dc",
-                        "sbs","inspect",
-                        "additive_thr_Linf_perm","additive_thr_L2_perm")
+  iterations = 100,
+  #same as the number of signals generated for each simulation setup
+  algorithms_to_run = c(
+    "MIDopt",
+    "dc",
+    "sbs",
+    "inspect",
+    "additive_thr_Linf_perm",
+    "additive_thr_L2_perm",
+    "KCP_Grid",
+    "KCP_Scree"
+  )
 )
 
 Execution_Table <- data.table(
-  methods = c("MIDopt",
-              "additive_thr_L2_perm",
-              "additive_thr_Linf_perm",
-              "dc","sbs","inspect"),
-  Execution = c("system.time(result<-MIDopt(signal_on_test))[[3]]",
-                "system.time(result<-additive_thr_L2_perm(signal_on_test,m = 1000,a1 = 0.001,points = 20))[[3]]",
-                "system.time(result<-additive_thr_Linf_perm(signal_on_test,m = 1000,a1 = 0.001,points = 20))[[3]]",
-                "system.time(result<-dcbs.alg(t(signal_on_test),cp.type = 1, phi = -1)$ecp)[[3]]",
-                "system.time(result<-sbs.alg(t(signal_on_test),cp.type = 1)$ecp)[[3]]",
-                "system.time(result<-InspectChangepoint::inspect(t(signal_on_test))$changepoints[,1])[[3]]")
+  methods = c(
+    "MIDopt",
+    "additive_thr_L2_perm",
+    "additive_thr_Linf_perm",
+    "dc",
+    "sbs",
+    "inspect",
+    "KCP_Grid",
+    "KCP_Scree"
+  ),
+  Execution = c(
+    "system.time(result<-MIDopt(signal_on_test))[[3]]",
+    "system.time(result<-additive_thr_L2_perm(signal_on_test,m = 1000,a1 = 0.001,points = 20))[[3]]",
+    "system.time(result<-additive_thr_Linf_perm(signal_on_test,m = 1000,a1 = 0.001,points = 20))[[3]]",
+    "system.time(result<-dcbs.alg(t(signal_on_test),cp.type = 1, phi = -1)$ecp)[[3]]",
+    "system.time(result<-sbs.alg(t(signal_on_test),cp.type = 1)$ecp)[[3]]",
+    "system.time(result<-InspectChangepoint::inspect(t(signal_on_test))$changepoints[,1])[[3]]",
+    "system.time(result<-kcprs_function_default(signal_on_test))[[3]]",
+    "system.time(result<-kcprs_function_scree(signal_on_test))[[3]]"
+  )
 )
 
 # Filter only algorithms of interest 

@@ -16,7 +16,7 @@ parameters <- list (
 
 
 # 2. Create signals
-allsignals <-list()
+allsignals <- list()
 set.seed(19)
 for (d in parameters$dimension){
   #create list for each dimension

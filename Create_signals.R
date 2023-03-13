@@ -12,7 +12,7 @@ source("HelpFunctions/SignalCreation.R")
 dimension <- c(10,30,100)
 number_of_changepoints <- c(3,20,50)
 sparsity <- c(0.2,0.5,0.8)
-
+LengthT <- 1500
 
 #How many simulations to create 
 m <- 100
@@ -23,7 +23,7 @@ distance <- 20
 simulation_setup <- as.data.table(tidyr::crossing(dimension,number_of_changepoints,sparsity))
 
 #Depending on the number of changepoints we fix the length of the timeserie
-simulation_setup[,LengthTimeserie := 1500]
+simulation_setup[,LengthTimeserie := LengthT]
 
 fwrite(simulation_setup,"Signals/all_combos.csv")
 
