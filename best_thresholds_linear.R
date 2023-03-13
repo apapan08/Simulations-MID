@@ -2,15 +2,15 @@ library(data.table)
 library(rlist)
 library(foreach)
 
-source("algorithms/additive_thr_L2_trend.R")
-source("algorithms/additive_thr_Linf_trend.R")
+source("algorithms/forsimulations/additive_thr_L2_trend.R")
+source("algorithms/forsimulations/additive_thr_Linf_trend.R")
 source("HelpFunctions/SignalCreation.R")
 
 
 # 1. Set the parameters 
 parameters <- list (
   dimension = seq (1,50,1), # dimension grid
-  thresholds = seq(0.8,1.4,0.5),# threshold grid
+  thresholds = seq(0.6,2,0.05),# threshold grid
   m = 500, # number of simulations per setup  
   n = 700 , # length of each timeserie
   a = 0.95 # percentile 
@@ -19,7 +19,7 @@ parameters <- list (
 
 #This chunk of code will create a list of 50 elements (as many as the dimensions)
 #Each element will have 500 objects (as many as the number of signals per dimension)
-#Each Object is a timeseries of a specific lenght
+#Each Object is a timeseries of a specific length
 #For exammple Allsignals[[3]][[5]] is a 3 dimension signal. It is the 5th iteration 
 AllSignals <- foreach(i=1:length(parameters$dimension))%do%
   {

@@ -2,8 +2,8 @@ library(data.table)
 library(rlist)
 library(foreach)
 
-source("algorithms/forsimulation/additive_thr_L2.R")
-source("algorithms/forsimulation/additive_thr_Linf.R")
+source("algorithms/forsimulations/additive_thr_L2.R")
+source("algorithms/forsimulations/additive_thr_Linf.R")
 
 # 1. Set the parameters 
 parameters <- list (
