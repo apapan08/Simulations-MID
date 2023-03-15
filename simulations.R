@@ -49,7 +49,8 @@ parameters <-  list(
     "additive_thr_Linf_perm",
     "additive_thr_L2_perm",
     "KCP_Grid",
-    "KCP_Scree"
+    "KCP_Scree",
+    "ht_MIDopt"
   )
 )
 
@@ -62,7 +63,8 @@ Execution_Table <- data.table(
     "sbs",
     "inspect",
     "KCP_Grid",
-    "KCP_Scree"
+    "KCP_Scree",
+    "ht_MIDopt"
   ),
   Execution = c(
     "system.time(result<-MIDopt(signal_on_test))[[3]]",
@@ -72,7 +74,8 @@ Execution_Table <- data.table(
     "system.time(result<-sbs.alg(t(signal_on_test),cp.type = 1)$ecp)[[3]]",
     "system.time(result<-InspectChangepoint::inspect(t(signal_on_test))$changepoints[,1])[[3]]",
     "system.time(result<-kcprs_function_default(signal_on_test))[[3]]",
-    "system.time(result<-kcprs_function_scree(signal_on_test))[[3]]"
+    "system.time(result<-kcprs_function_scree(signal_on_test))[[3]]",
+    "system.time(result<-ht_MIDopt(signal_on_test))[[3]]"
   )
 )
 

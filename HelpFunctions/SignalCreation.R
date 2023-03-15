@@ -137,7 +137,7 @@ change_sign<-function(x){
 # 'random_matrix' creates a matrix of dimension 'd' and Length 'T'
 # other parameters : number of changepoints , minimum distance between changepoints
 # parameters of the uniform distribution that will be used for the random jump
-random_matrix <- function(d,n,number_of_changepoints,sparsity,a_uniform=1,b_uniform=2, 
+random_matrix <- function(d,n,number_of_changepoints,sparsity,s = 2.5, 
                           noise_distr = "Gaussian",DoF = 8,
                           uniform_lower = -sqrt(3),uniform_upper = sqrt(3),
                           SettingSpatial = "setting2"){
@@ -164,7 +164,7 @@ random_matrix <- function(d,n,number_of_changepoints,sparsity,a_uniform=1,b_unif
       timeserie=list.append(timeserie,rep(0,n))
     }else{
       changepoints<-changepoints_positions[x]
-      jumps=change_sign(runif(length(changepoints),a_uniform,b_uniform))/sqrt(ind[x])
+      jumps=change_sign(runif(length(changepoints),s,s))/sqrt(ind[x])
       timeserie=list.append(timeserie,create_signal(n,changepoints,jumps))
     }
     
@@ -175,15 +175,13 @@ random_matrix <- function(d,n,number_of_changepoints,sparsity,a_uniform=1,b_unif
   if (noise_distr == "Gaussian"){
     timeserie = t(do.call(rbind,timeserie))+ matrix(rnorm(d*n),nrow = n)
   } 
-  if (noise_distr == "Unif"){
-    timeserie = t(do.call(rbind,timeserie))+ matrix(runif(d*n,min = uniform_lower,max = uniform_upper),nrow = n)
-  } 
   if (noise_distr == "Student"){
     timeserie = t(do.call(rbind,timeserie))+ sqrt((DoF-2)/DoF) * matrix(rt(d*n,df = DoF),nrow = n)
   }
-  if (noise_distr == "Exponential"){
-    timeserie = t(do.call(rbind,timeserie))+ matrix(rexp(d*n,rate = 1),nrow = n)
-  }
+  if (noise_distr == "Unif"){
+    timeserie = t(do.call(rbind,timeserie))+ matrix(runif(d*n,min = uniform_lower,max = uniform_upper),nrow = n)
+  } 
+  
   if (noise_distr == "Spatial"){
     if (SettingSpatial == "setting1"){
       SigmaMatrix <- matrix(NA, d,d)
