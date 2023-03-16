@@ -21,7 +21,7 @@ source("algorithms/additive_thr_L2_trend.R")
 source("algorithms/additive_thr_Linf_trend.R")
 source("algorithms/ht_additive_thr_Linf_trend.R")
 source("algorithms/ht_additive_thr_L2_trend.R")
-source("algorithms/ht_MIDopt_lin.R")
+
 
 parameters = list(
   iterations=100,#same as the number of signals generated for

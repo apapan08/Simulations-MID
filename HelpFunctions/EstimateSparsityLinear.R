@@ -19,10 +19,10 @@ EstimateTripletsLinear <- function(X,A,threshold){
 }
 
 
-EstimatedSparsityLinear <- function(X){
+EstimatedSparsityLinear <- function(X, cpt){
   LengthTimeserie <- nrow(X)
   TempThreshold <- linf_dimension[dimension == ncol(X),threshold]
-  EstimatedChangepoints <- additive_thr_Linf_trend(X,thr_const = TempThreshold)
+  EstimatedChangepoints <- cpt
   if (length(EstimatedChangepoints)==0){
     ComponentsWithChp <- 0
   }else{
@@ -31,7 +31,7 @@ EstimatedSparsityLinear <- function(X){
     toAddMatrix[2:nrow(toAddMatrix)] <- 1
     triplets <- triplets + toAddMatrix
     # we add one to changepoints
-    threshold = 1.1*sqrt(2*log(LengthTimeserie)) # 1.1 is the default value for IDetect
+    threshold = 1.4*sqrt(2*log(LengthTimeserie)) # 1.1 is the default value for IDetect
     ChangepointComponents = apply(
       X, MARGIN = 2,
       FUN = EstimateTripletsLinear,A = triplets,

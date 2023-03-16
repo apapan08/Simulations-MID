@@ -33,7 +33,6 @@ for (i in 1:nrow(simulation_setup)){
   timeserie_list[[paste0(
     as.character(dime),"_",as.character(n_changepoints),"_",as.character(sparsity)
   )]]=list()
-  set.seed(27)
   for (j in 1:m){
     matrix_temp=random_matrix_linear(d=dime,n=length_of_timeserie,number_of_changepoints = n_changepoints,
                               sparsity = sparsity,distance = distance,a_uniform = 0.3,b_uniform = 0.6)

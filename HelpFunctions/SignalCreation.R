@@ -120,7 +120,6 @@ place_chps<-function(len,n_chps,distance){
 
 
 #EXAMPLE
-#set.seed(11)
 #place_chps(1000,10,50)
 
 
@@ -137,7 +136,7 @@ change_sign<-function(x){
 # 'random_matrix' creates a matrix of dimension 'd' and Length 'T'
 # other parameters : number of changepoints , minimum distance between changepoints
 # parameters of the uniform distribution that will be used for the random jump
-random_matrix <- function(d,n,number_of_changepoints,sparsity,s = 2.5, 
+random_matrix <- function(d,n,number_of_changepoints,sparsity,s = 2, 
                           noise_distr = "Gaussian",DoF = 8,
                           uniform_lower = -sqrt(3),uniform_upper = sqrt(3),
                           SettingSpatial = "setting2"){
@@ -200,7 +199,6 @@ random_matrix <- function(d,n,number_of_changepoints,sparsity,s = 2.5,
 }
 
 # EXAMPLE
-# set.seed(16)
 # d=10
 # n=1000
 # x=random_matrix(d,n,number_of_changepoints = 3,sparsity = 0.2,distance = 50)
@@ -213,7 +211,7 @@ random_matrix <- function(d,n,number_of_changepoints,sparsity,s = 2.5,
 
 # Linear signal 
 
-#set.seed(1)
+
 ##'random_matrix' creates a matrix of dimension 'd' and Length 'T'
 random_matrix_linear <- function(d,n,number_of_changepoints,sparsity,distance,a_uniform=1,b_uniform=4){
   #sparsity
@@ -260,7 +258,6 @@ random_matrix_linear <- function(d,n,number_of_changepoints,sparsity,distance,a_
 }
 
 # EXAMPLE
-# set.seed(16)
 # d=10
 # n=1000
 # x=random_matrix_linear(d,n,number_of_changepoints = 3,sparsity = 0.2,distance = 50,a_uniform = 0.3,b_uniform = 0.6)
