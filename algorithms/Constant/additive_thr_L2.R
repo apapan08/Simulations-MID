@@ -1,7 +1,7 @@
 additive_thr_L2 <- function(X, thr_const = 1,
                             thr_fin = thr_const * sqrt(2*log(nrow(X))),
                             s = 1, e = nrow(X), points = 10, k_l = 1,
-                            k_r = 1) {
+                            k_r = 1, Choose_Optimal = T) {
   if (!(is.matrix(X))) {
     stop("The input in `X' should be a numeric matrix, with each data
         sequence we want to investigate being a column of this matrix.")
@@ -16,12 +16,15 @@ additive_thr_L2 <- function(X, thr_const = 1,
         a positive real number then the integer part of the given number is
         used as the value of `points'.")
   }
-  if (ncol(X)>50){
-    thr_const <- l2_dimension[dimension == 50,threshold]
-    thr_fin = thr_const * sqrt(2*log(nrow(X)))
-  }else{
-    thr_const=l2_dimension[dimension == ncol(X),threshold]
-    thr_fin = thr_const * sqrt(2*log(nrow(X)))}
+  if (Choose_Optimal){
+    if (ncol(X)>50){
+      thr_const <- l2_dimension[dimension == 50,threshold]
+      thr_fin = thr_const * sqrt(2*log(nrow(X)))
+    }else{
+      thr_const=l2_dimension[dimension == ncol(X),threshold]
+      thr_fin = thr_const * sqrt(2*log(nrow(X)))}
+  }
+
   
   points <- as.integer(points)
   l <- length(X[, 1])
@@ -108,11 +111,11 @@ additive_thr_L2 <- function(X, thr_const = 1,
       if (chp > ((e + s) / 2)) {
         r <- additive_thr_L2(X, s = s, e = chp, points = points,
                              thr_fin = thr_fin, k_r = k_r,
-                             k_l = 1)
+                             k_l = 1,Choose_Optimal = Choose_Optimal)
       } else {
         r <- additive_thr_L2(X, s = chp + 1, e = e, points = points,
                              thr_fin = thr_fin, k_r = 1,
-                             k_l = max(1, k_l - 1))
+                             k_l = max(1, k_l - 1),Choose_Optimal = Choose_Optimal)
       }
       cpt <- c(chp, r)
     } else {

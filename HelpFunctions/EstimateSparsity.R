@@ -19,9 +19,9 @@ EstimateTriplets <- function(X,A,threshold){
   
 }
 
-EstimatedSparsity <- function(X){
+EstimatedSparsity <- function(X,cpt){
   LengthTimeserie <- nrow(X)
-  EstimatedChangepoints <- additive_thr_Linf(X)
+  EstimatedChangepoints <- cpt
   if (length(EstimatedChangepoints)==0){
     ComponentsWithChp <- 0
   }else{

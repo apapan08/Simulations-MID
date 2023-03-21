@@ -1,10 +1,7 @@
-##Main function
-## Functions for changes in the trend
-
-additive_thr_L2_trend <- function(X, thr_const = 1.4,
-                                  thr_fin = thr_const * sqrt(2 * log(nrow(X))),
-                                  s = 1, e = nrow(X), points = 10, k_l = 1,
-                                  k_r = 1) {
+additive_thr_Linf_trend <- function(X, thr_const = 1.4,
+                                    thr_fin = thr_const * sqrt(2 * log(nrow(X))),
+                                    s = 1, e = nrow(X), points = 10, k_l = 1,
+                                    k_r = 1,Choose_Optimal = TRUE) {
   if (!(is.matrix(X))) {
     stop("The input in `X' should be a numeric matrix, with each data sequence
         we want to investigate being a column of this matrix.")
@@ -19,12 +16,15 @@ additive_thr_L2_trend <- function(X, thr_const = 1.4,
         If it is a positive real number then the integer part of the
         given number is used as the value of `points'.")
   }
-  if (ncol(X)>50){
-    thr_const <- l2_dimension_lin[dimension == 50,threshold]
-    thr_fin = thr_const * sqrt(2*log(nrow(X)))
-  }else{
-    thr_const=l2_dimension_lin[dimension == ncol(X),threshold]
-    thr_fin = thr_const * sqrt(2*log(nrow(X)))}
+  if(Choose_Optimal){
+    if (ncol(X)>50){
+      thr_const <- linf_dimension_lin[dimension == 50,threshold]
+      thr_fin = thr_const * sqrt(2*log(nrow(X)))
+    }else{
+      thr_const=linf_dimension_lin[dimension == ncol(X),threshold]
+      thr_fin = thr_const * sqrt(2*log(nrow(X)))}
+  }
+
   points <- as.integer(points)
   l <- length(X[, 1])
   r_e_points <- seq(points, l, points)
@@ -32,7 +32,7 @@ additive_thr_L2_trend <- function(X, thr_const = 1.4,
   chp <- 0
   if (e - s <= 1) {
     cpt <- 0
-    noiseless.cpt<-0
+    noiseless.cpt <- 0
   } else {
     pos_r <- numeric()
     CUSUM_r <- numeric()
@@ -54,7 +54,7 @@ additive_thr_L2_trend <- function(X, thr_const = 1.4,
     if (length(loc) == 0){
       loc <- ncol(X) + 1
     }
-    if ((length(loc) < ncol(X)) | (loc == ncol(X) + 1)){
+    if (length(loc) < ncol(X) | (loc == ncol(X) + 1)){
       if (k_r < k_l) {
         while ((chp == 0) & (k_r < min(k_l, rur))) {
           lxr <- right_points[k_r] - s + 1
@@ -63,9 +63,9 @@ additive_thr_L2_trend <- function(X, thr_const = 1.4,
             ipcr[, i] <- IDetect:::cumsum_lin(X[s:right_points[k_r], i])/stats::mad(diff(diff(X[,i]))/sqrt(6))
           }
           ipcr <- ipcr[, colSums(is.na(ipcr)) != nrow(ipcr), drop = FALSE]
-          sipcr <- sqrt(rowSums(ipcr^2)) / sqrt(ncol(X))
-          pos_r[k_r] <- which.max(sipcr) + s - 1
-          CUSUM_r[k_r] <- sipcr[pos_r[k_r] - s + 1]
+          mpcr <- apply(abs(ipcr),1,max)
+          pos_r[k_r] <- which.max(mpcr) + s - 1
+          CUSUM_r[k_r] <- mpcr[pos_r[k_r] - s + 1]
           if (CUSUM_r[k_r] > thr_fin) {
             chp <- pos_r[k_r]
           } else {
@@ -81,9 +81,9 @@ additive_thr_L2_trend <- function(X, thr_const = 1.4,
             ipcl[, i] <- IDetect:::cumsum_lin(X[left_points[k_l]:e, i])/stats::mad(diff(diff(X[,i]))/sqrt(6))
           }
           ipcl <- ipcl[, colSums(is.na(ipcl)) != nrow(ipcl), drop = FALSE]
-          sipcl <- sqrt(rowSums(ipcl^2)) / sqrt(ncol(X))
-          pos_l[k_l] <- which.max(sipcl) + left_points[k_l] - 1
-          CUSUM_l[k_l] <- sipcl[pos_l[k_l] - left_points[k_l] + 1]
+          mpcl <- apply(abs(ipcl),1,max)
+          pos_l[k_l] <- which.max(mpcl) + left_points[k_l] - 1
+          CUSUM_l[k_l] <- mpcl[pos_l[k_l] - left_points[k_l] + 1]
           if (CUSUM_l[k_l] > thr_fin) {
             chp <- pos_l[k_l]
           } else {
@@ -99,9 +99,9 @@ additive_thr_L2_trend <- function(X, thr_const = 1.4,
             ipcr[, i] <- IDetect:::cumsum_lin(X[s:right_points[k_r], i])/stats::mad(diff(diff(X[,i]))/sqrt(6))
           }
           ipcr <- ipcr[, colSums(is.na(ipcr)) != nrow(ipcr), drop = FALSE]
-          sipcr <- sqrt(rowSums(ipcr^2)) / sqrt(ncol(X))
-          pos_r[k_r] <- which.max(sipcr) + s - 1
-          CUSUM_r[k_r] <- sipcr[pos_r[k_r] - s + 1]
+          mpcr <- apply(abs(ipcr),1,max)
+          pos_r[k_r] <- which.max(mpcr) + s - 1
+          CUSUM_r[k_r] <- mpcr[pos_r[k_r] - s + 1]
           if (CUSUM_r[k_r] > thr_fin) {
             chp <- pos_r[k_r]
           } else {
@@ -111,9 +111,9 @@ additive_thr_L2_trend <- function(X, thr_const = 1.4,
               ipcl[, i] <- IDetect:::cumsum_lin(X[left_points[k_l]:e, i])/stats::mad(diff(diff(X[,i]))/sqrt(6))
             }
             ipcl <- ipcl[, colSums(is.na(ipcl)) != nrow(ipcl), drop = FALSE]
-            sipcl <- sqrt(rowSums(ipcl^2)) / sqrt(ncol(X))
-            pos_l[k_l] <- which.max(sipcl) + left_points[k_l] - 1
-            CUSUM_l[k_l] <- sipcl[pos_l[k_l] - left_points[k_l] + 1]
+            mpcl <- apply(abs(ipcl),1,max)
+            pos_l[k_l] <- which.max(mpcl) + left_points[k_l] - 1
+            CUSUM_l[k_l] <- mpcl[pos_l[k_l] - left_points[k_l] + 1]
             if (CUSUM_l[k_l] > thr_fin) {
               chp <- pos_l[k_l]
             } else {
@@ -125,13 +125,13 @@ additive_thr_L2_trend <- function(X, thr_const = 1.4,
       }
       if (chp != 0) {
         if (chp > ((e + s) / 2)) {
-          r <- additive_thr_L2_trend(X, s = s, e = chp, points = points,
-                                     thr_fin = thr_fin, k_r = k_r,
-                                     k_l = 1)
+          r <- additive_thr_Linf_trend(X, s = s, e = chp, points = points,
+                                       thr_fin = thr_fin, k_r = k_r,
+                                       k_l = 1, Choose_Optimal = Choose_Optimal)
         } else {
-          r <- additive_thr_L2_trend(X, s = chp + 1, e = e,
-                                     points = points, thr_fin = thr_fin,
-                                     k_r = 1, k_l = max(1, k_l - 1))
+          r <- additive_thr_Linf_trend(X, s = chp + 1, e = e,
+                                       points = points, thr_fin = thr_fin,
+                                       k_r = 1, k_l = max(1, k_l - 1), Choose_Optimal = Choose_Optimal)
         }
         cpt <- c(chp, r)
       } else {
@@ -141,4 +141,6 @@ additive_thr_L2_trend <- function(X, thr_const = 1.4,
   }
   cpt <- cpt[cpt != 0]
   noiseless.cpt <- noiseless.cpt[noiseless.cpt!=0]
-  return(sort(unique(c(cpt, noiseless.cpt))))}
+  return(sort(unique(c(cpt, noiseless.cpt))))
+}
+

@@ -1,7 +1,7 @@
 MIDopt_lin <- function(X, thr_const = 1.4,
                             thr_fin = thr_const * sqrt(2*log(nrow(X))),
                             s = 1, e = nrow(X), points = 10, k_l = 1,
-                            k_r = 1) {
+                            k_r = 1,Choose_Optimal = TRUE) {
   if (!(is.matrix(X))) {
     stop("The input in `X' should be a numeric matrix, with each data
         sequence we want to investigate being a column of this matrix.")
@@ -19,14 +19,14 @@ MIDopt_lin <- function(X, thr_const = 1.4,
   cpt <- additive_thr_Linf_trend(X, thr_const = thr_const,
                              thr_fin = thr_const * sqrt(2*log(nrow(X))),
                              s = 1, e = nrow(X), points = points, k_l = 1,
-                             k_r = 1)
+                             k_r = 1,Choose_Optimal = Choose_Optimal)
   
   SparsityEst <- EstimatedSparsityLinear(X, cpt)
   if (SparsityEst > 0.6){
     cpt <- additive_thr_L2_trend(X, thr_const = thr_const,
                              thr_fin = thr_const * sqrt(2*log(nrow(X))),
                              s = 1, e = nrow(X), points = points, k_l = 1,
-                             k_r = 1)
+                             k_r = 1,Choose_Optimal = Choose_Optimal)
   }
   return(cpt)
 }

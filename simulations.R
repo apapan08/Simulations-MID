@@ -31,11 +31,11 @@ source("HelpFunctions/Evaluations.R")
 source("HelpFunctions/EstimateSparsity.R")
 
 # List all the R scripts in the folder
-r_files <- list.files(path = "algorithms",pattern = "*.R")
+r_files <- list.files(path = "algorithms/Constant/",pattern = "*.R")
 
 # Loop through the list of files and source each R script
 for (file in r_files) {
-  source(paste0("algorithms/",file))
+  source(paste0("algorithms/Constant/",file))
 }
 
 parameters <-  list(

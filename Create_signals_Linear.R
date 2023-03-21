@@ -17,8 +17,7 @@ distance <- 20
 simulation_setup <- as.data.table(tidyr::crossing(dimension,number_of_changepoints,sparsity))
 
 #Depending on the number of changepoints we fix the length of the timeserie
-simulation_setup[,LengthTimeserie := ifelse(number_of_changepoints ==3,700,
-                                            ifelse(number_of_changepoints==20,1000,1500))]
+simulation_setup[,LengthTimeserie := 1500]
 
 fwrite(simulation_setup,"Signals/all_combos_linear.csv")
 
